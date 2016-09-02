@@ -1,0 +1,25 @@
+function flag=com_gray(image1,image2)
+%输入两图片，判断是否被篡改
+flag=0;
+t=10;%t为去黑边阈值
+p1=preblack(rgb2gray(image1),t);
+m1=mean2(p1);
+p2=preblack(rgb2gray(image2),t);
+m2=mean2(p2);
+p1=p1+(m2-m1);
+[a1,b1]=size(p1);
+[a2,b2]=size(p2);
+a=min([a1,a2]);
+b=min([b1,b2]);
+r1=imresize(p1,[a,b],'nearest');
+r1_1=r1(round(a/100):a-round(a/100),round(b/100):b-round(b/100));
+%figure;imshow(r1_1);
+r2=imresize(p2,[a,b],'nearest');
+r2_1=r2(round(a/100):a-round(a/100),round(b/100):b-round(b/100));
+%figure;imshow(r2_1);
+Sh=r1_1-r2_1;
+out1=(Sh>20);
+out2=(Sh>100);
+per=(sum(sum(out1))+sum(sum(out2))*10)/a/b%二种差进行非线性组合
+flag=(per>0.2);%阈值为0.2
+end
